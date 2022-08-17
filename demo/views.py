@@ -36,7 +36,7 @@ def search_data(search):
             des = detail.find('div', class_='sc-16ede01-7 hrgVKw').text
             director = detail.find('ul',
                                    class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
-            writer = detail.find_next('ul',class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next('ul',class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text.
+            writer = detail.find_next('ul',class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next('ul',class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
             print('director:', director)
             print('writer:', writer)
     # print('name:',name['href'])
