@@ -40,8 +40,12 @@ def search_data(search):
                                       class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next(
                 'ul',
                 class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
+            year = detail.find('li', class_='ipc-inline-list__item').text
             print('director:', director)
             print('writer:', writer)
+            print('star:', year)
+    # 'ipc-inline-list__item'
+    # 'ipc-inline-list__item'
     # print('name:',name['href'])
     # print('name:',name.split()[1])
 
