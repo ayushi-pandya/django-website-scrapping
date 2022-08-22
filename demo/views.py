@@ -74,6 +74,7 @@ class DemoFunction(View):
 
     def post(self, request):
         search = request.POST['search']
+        print(search)
         search = search.strip()
         if search != '':
             names = search_data(search)
@@ -82,7 +83,7 @@ class DemoFunction(View):
                 data[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], \
                                          names['Year'][
                                              i]
-            return JsonResponse(list(data), safe=False)
+            return JsonResponse(data, safe=False)
             # return render(request, 'demo/home.html', {'data': data})
         else:
             return render(request, 'demo/home.html')

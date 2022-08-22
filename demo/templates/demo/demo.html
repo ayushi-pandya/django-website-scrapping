@@ -22,14 +22,32 @@
     <body>
         <div class="container" style="margin-top: 20px">
             <div class ='message'>
-                <form class="form-inline my-2 my-lg-0" method="post" role="search" action="{% url 'demo_home' %}">
+                <form class="form-inline my-2 my-lg-0" method="post" role="search"  id = 'demo-form'>
                     {% csrf_token %}
-                    <input type="search" class="form-control" id="demo_form" placeholder="search here.." name="search">
+                    <input type="search" class="form-control" id="demo" placeholder="search here.." name="search">
                     <button class="btn btn-outline-primary my-2 my-sm-0"  type="submit">Search</button>
                 </form>
-                <ul id="search-results">
-
-                </ul>
+{#                <ul id="search-results">#}
+{##}
+{#                </ul>#}
+{#                {{ data }}#}
+{#                <table id="myTable">#}
+{#                   <thead></thead>#}
+{#                   <tbody></tbody>#}
+{#                </table>#}
+                <div class="card-body">
+                    {{ theHTML }}
+                    <table id="_appendHere" class="table">
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Director</th>
+                      <th>Writer</th>
+                      <th>Release Info</th>
+                  </table>
+{#                 {% for t in data %}#}
+{#                    <p>{{t}}</p>#}
+{#                 {% endfor %}#}
+                </div>
 
             </div>
         </div>
@@ -37,26 +55,110 @@
 
     <script>
         console.log('start')
-        $(function(){
+        $(document).on('submit','#demo-form',function(e){
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'{% url "demo_home" %}',
+            data:
+            {
+                'search':$("#demo").val(),
+                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response){
+                console.log(response);
+                var theHTML = {};
+                {#$(".card-body").html(response);#}
+                $.each(response,function(key,value){
+                   theHTML += "<tr><td>" + key + "</td><td>"+ $.each(value,function(i){i}) + "</td></tr>";
+                   $(".card-body").append(theHTML);
+                })
+                  {#$.each(response, function (t) {#}
+                  {#   $(".card-body").append(t);#}
+                  {#.});#}
+            }
+       });
+        })
 
-            $('#demo_form').keyup(function(){
-            $.ajax({
-              type:"POST",
-              url:"{% url 'demo_home' %}",
-              data:{
-                'search': $('#demo_form').val(),
-                'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
-              },
-              success: searchSuccess,
-              dataType: 'html'
-            });
-          });
-        });
-        function searchSuccess(data, textStatus,jqXHR)
-        {
-          $('#search-results').html(data);
-        }
+
+{#    return false;#}
+{#.}#}
+        {#    success: function (result) {#}
+        {#       $('#myTable tr').empty();#}
+        {#       var header = $('#myTable thead');#}
+        {#       var body = $('#myTable tbody');#}
+        {#       var hTr;#}
+        {#       $('#myTable thead').append(hTr = $('<tr>'));#}
+        {#       // Headers#}
+        {#       for (var h = 0; h < result.headers.length; h++) {#}
+        {#          hTr.append($('<th>', { text: result.headers[h] }))#}
+        {#       }#}
+        {#       // Body#}
+        {#       for (var d in result.data) {#}
+        {#          var data = result.data[d];#}
+        {#          $('#myTable tbody').append($('<tr>')#}
+        {#              .append($('<td>', { text: data.key }))#}
+        {#              .append($('<td>', { text: data.value }))#}
+        {#              .append($('<td>', { text: data.value }))#}
+        {#              .append($('<td>', { text: data.value }))#}
+        {#          )#}
+        {#       }#}
+        {#   }#}
+        {#.})#}
+            {#success: function (data) {#}
+            {#    console.log(data);#}
+            {#    $(".tbody_target").append(data);#}
+                {#let teks = "";#}
+                {#$.each(data.detail, function (index, val) { //looping table detail bahan#}
+                {#    let name = val.name;#}
+                {#    let description = val.description;#}
+                {#    let director = val.director;#}
+                {#    let writer = val.writer;#}
+                {#    let release_info = val.release_info;#}
+                {##}
+                {#    teks += "<tr class='tr_detail'><td>" + name +#}
+                {#            "</td><td>" + description +#}
+                {#            "</td><td>" + director +#}
+                {#            "</td><td>" + writer +#}
+                {#            "</td><td>" + release_info +#}
+                {#            "</td></tr>";#}
+                {#,});#}
+                {#$(".tbody_target").append(teks);#}
+            {#.}#}
+            {#success:function(response){#}
+            {#    console.log(response);#}
+            {#        }#}
+            {#,})#}
+        {#,});#}
     </script>
+        {#console.log('start')#}
+        {#$(function(){#}
+        {##}
+        {#    $('#demo_form').submit(function(){#}
+        {#    $.ajax({#}
+        {#      type:"POST",#}
+        {#      url:"{% url 'demo_home' %}",#}
+        {#      data:{#}
+        {#        'search': $('#demo_form').val(),#}
+        {#        'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()#}
+        {#      },#}
+        {#        success: function(response){#}
+        {#            console.log(response);#}
+        {#            // document.getElementById('editCategoriesContainer').innerHTML = data;#}
+        {#        },#}
+        {#        error:function(){#}
+        {#            console.log('Error');#}
+        {#        },#}
+              {#success: searchSuccess,#}
+              {#dataType: 'html'#}
+        {#    });#}
+        {#  });#}
+        {#,});#}
+        {#function searchSuccess(data, textStatus,jqXHR)#}
+        {#{#}
+        {#  $('#search-results').html(data);#}
+        {#.}#}
+
 
 
 </html>
