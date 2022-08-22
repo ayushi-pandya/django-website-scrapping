@@ -22,46 +22,41 @@
     <body>
         <div class="container" style="margin-top: 20px">
             <div class ='message'>
-                <form class="form-inline my-2 my-lg-0" method="post" role="search" action="{% url 'home' %}">
+                <form class="form-inline my-2 my-lg-0" method="post" role="search" action="{% url 'demo_home' %}">
                     {% csrf_token %}
                     <input type="search" class="form-control" id="demo_form" placeholder="search here.." name="search">
                     <button class="btn btn-outline-primary my-2 my-sm-0"  type="submit">Search</button>
                 </form>
+                <ul id="search-results">
+
+                </ul>
+
             </div>
-             <table id="_appendHere" class="table">
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Director</th>
-                      <th>Writer</th>
-                      <th>Release Info</th>
-                      {% for key, value in data.items %}
-                          <tr>
-                              <td>{{ key }}</td>
-                              {% for i in value %}
-                                <td>{{ i }}</td>
-                              {% endfor %}
-                          </tr>
-                      {% endfor %}
-             </table>
         </div>
     </body>
 
-</html>
-<script>
-    console.log('start')
-    var availableTags = [ ];
+    <script>
+        console.log('start')
+        $(function(){
 
-    $.ajax({
-        method:"GET",
-        url:"{% url 'home' %}",
-        success: function (response){
-            console.log(response)
-            startAutocomplete(response);
-        }
-    })
-    function startAutocomplete(availableTags) {
-        $("#demo_form").autocomplete({
-            source: availableTags
+            $('#demo_form').keyup(function(){
+            $.ajax({
+              type:"POST",
+              url:"{% url 'demo_home' %}",
+              data:{
+                'search': $('#demo_form').val(),
+                'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+              },
+              success: searchSuccess,
+              dataType: 'html'
+            });
+          });
         });
-    }
-</script>
+        function searchSuccess(data, textStatus,jqXHR)
+        {
+          $('#search-results').html(data);
+        }
+    </script>
+
+
+</html>

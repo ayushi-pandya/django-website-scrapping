@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from bs4 import BeautifulSoup
 import requests
@@ -76,32 +77,12 @@ class DemoFunction(View):
         search = search.strip()
         if search != '':
             names = search_data(search)
-            a = {}
+            data = {}
             for i in range(len(names['Name'])):
-                a[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], names['Year'][
-                    i]
-            return render(request, 'demo/home.html', {'data': a})
-
+                data[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], \
+                                         names['Year'][
+                                             i]
+            return JsonResponse(list(data), safe=False)
+            # return render(request, 'demo/home.html', {'data': data})
         else:
-            return render(request, 'demo/demo.html')
-
-
-# user_input = request.GET.get('inputValue')
-#     data = {'response': f'You typed: {user_input}'}
-#     return JsonResponse(data)
-
-# class Search(View):
-# def all_search(request):
-#     search = request.POST['search']
-#     print('search:', search)
-#     search = search.strip()
-#     if search != '':
-#         names = search_data(search)
-#         a = {}
-#         for i in range(len(names['Name'])):
-#             a[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], names['Year'][
-#                 i]
-#         return render(request, 'demo/home.html', {'data': a})
-#
-#     else:
-#         return render(request, 'demo/demo.html')
+            return render(request, 'demo/home.html')
