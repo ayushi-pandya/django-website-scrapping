@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.contrib.messages.context_processors import messages
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from bs4 import BeautifulSoup
 import requests
@@ -16,56 +17,60 @@ def search_data(search):
 
     soup = BeautifulSoup(page_html, 'html.parser')
 
-    movies = soup.find('table', class_='findList').find_all('td', class_='result_text')
+    alldata = soup.find('table', class_='findList')
 
-    name_list = []
-    des_list = []
-    director_list = []
-    writer_list = []
-    year_list = []
+    if alldata != None:
+        data = alldata.find_all('td', class_='result_text')
 
-    for movie in movies[:3]:
-        name = movie.a.text
-        name_list.append(name)
+        name_list = []
+        des_list = []
+        director_list = []
+        writer_list = []
+        year_list = []
 
-        data = movie.find('a', href=True)
-        res = requests.get('https://www.imdb.com' + data['href'])
-        html = res.text
-        soup = BeautifulSoup(html, 'html.parser')
+        for movie in data[:3]:
+            name = movie.a.text
+            name_list.append(name)
 
-        details = soup.find('section', class_='ipc-page-section ipc-page-section--baseAlt ipc-page-section--tp-none '
-                                              'ipc-page-section--bp-xs sc-2a827f80-1 gvCXlM').find_all('div',
-                                                                                                       class_='sc-2a827f80-10 fVYbpg')
+            data = movie.find('a', href=True)
+            res = requests.get('https://www.imdb.com' + data['href'])
+            html = res.text
+            soup = BeautifulSoup(html, 'html.parser')
 
-        for detail in details:
-            des = detail.find('div', class_='sc-16ede01-7 hrgVKw').text
-            des_list.append(des)
+            details = soup.find('section',
+                                class_='ipc-page-section ipc-page-section--baseAlt ipc-page-section--tp-none '
+                                       'ipc-page-section--bp-xs sc-2a827f80-1 gvCXlM').find_all('div',
+                                                                                                class_='sc-2a827f80-10 fVYbpg')
 
-            director = detail.find('ul',
-                                   class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
-            director_list.append(director)
+            for detail in details:
+                des = detail.find('div', class_='sc-16ede01-7 hrgVKw').text
+                des_list.append(des)
 
-            writer = detail.find_next('ul',
-                                      class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next(
-                'ul',
-                class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
-            writer_list.append(writer)
+                director = detail.find('ul',
+                                       class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
+                director_list.append(director)
 
-        info = soup.find('section', class_='ipc-page-section ipc-page-section--baseAlt ipc-page-section--tp-none '
-                                           'ipc-page-section--bp-xs sc-2a827f80-1 gvCXlM').find_all('div',
-                                                                                                    class_='sc-80d4314-2 iJtmbR')
+                writer = detail.find_next('ul',
+                                          class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next(
+                    'ul',
+                    class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
+                writer_list.append(writer)
 
-        for i in info:
-            year = i.text
-            year_list.append(year)
+            info = soup.find('section', class_='ipc-page-section ipc-page-section--baseAlt ipc-page-section--tp-none '
+                                               'ipc-page-section--bp-xs sc-2a827f80-1 gvCXlM').find_all('div',
+                                                                                                        class_='sc-80d4314-2 iJtmbR')
 
-    details_dict = {'Name': name_list,
-                    'Description': des_list,
-                    'Director': director_list,
-                    'Writer': writer_list,
-                    'Year': year_list}
+            for i in info:
+                year = i.text
+                year_list.append(year)
 
-    return details_dict
+        details_dict = {'Name': name_list,
+                        'Description': des_list,
+                        'Director': director_list,
+                        'Writer': writer_list,
+                        'Year': year_list}
+
+        return details_dict
 
 
 class DemoFunction(View):
@@ -78,12 +83,16 @@ class DemoFunction(View):
         search = search.strip()
         if search != '':
             names = search_data(search)
-            data = {}
-            for i in range(len(names['Name'])):
-                data[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], \
-                                         names['Year'][
-                                             i]
-            return JsonResponse(data, safe=False)
-            # return render(request, 'demo/home.html', {'data': data})
+            print('names:', names)
+            if names is not None:
+                search_result = {}
+                for i in range(len(names['Name'])):
+                    search_result[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], \
+                                                      names['Year'][
+                                                          i]
+                return JsonResponse(search_result, safe=False)
+            else:
+                return JsonResponse('No data found')
+
         else:
             return render(request, 'demo/home.html')
