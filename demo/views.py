@@ -1,5 +1,4 @@
-from django.contrib.messages.context_processors import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from bs4 import BeautifulSoup
 import requests

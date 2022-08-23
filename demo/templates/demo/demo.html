@@ -27,17 +27,7 @@
                     <input type="search" class="form-control" id="demo" placeholder="search here.." name="search">
                     <button class="btn btn-outline-primary my-2 my-sm-0"  type="submit">Search</button>
                 </form>
-{#                <div class="card-body">#}
-{#                    {{ theHTML }}#}
-{#                    <table id="_appendHere" class="table">#}
-{#                      <th width="20%">Name</th>#}
-{#                      <th width="40%">Description</th>#}
-{#                      <th width="15%">Director</th>#}
-{#                      <th width="15%">Writer</th>#}
-{#                      <th>Release Info</th>#}
-{#                  </table>#}
-{##}
-{#                </div>#}
+
                 <table id="myTable" class="table table-hover">
 
                 <thead id="header">
@@ -61,15 +51,16 @@
     <script>
         console.log('start')
         $(document).on('submit','#demo-form',function(e){
-        e.preventDefault();
+            var serializedData = $(this).serialize();
+            e.preventDefault();
         $.ajax({
             type:'POST',
             url:'{% url "demo_home" %}',
-            data:
-            {
-                'search':$("#demo").val(),
-                'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()
-            },
+            data:serializedData,
+            {#{#}
+            {#    'search':$("#demo").val(),#}
+            {#    'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()#}
+            {#.},#}
             success: function(response){
                 {#console.log(response);#}
                 var theHTML = {};
@@ -84,8 +75,9 @@
                    $("#myTable #tbody").html(theHTML);
                 })
             },
-            error: function(data){
-                alert('No Data Found');
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status);
+                alert(thrownError);
             }
        });
         })
