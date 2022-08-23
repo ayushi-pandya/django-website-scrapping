@@ -18,7 +18,7 @@ def search_data(search):
 
     alldata = soup.find('table', class_='findList')
 
-    if alldata != None:
+    if alldata is not None:
         data = alldata.find_all('td', class_='result_text')
 
         name_list = []
