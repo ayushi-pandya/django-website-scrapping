@@ -33,10 +33,10 @@
                 <thead id="header">
                   <tr class="mycol__">
                     <th class="col1">Name</th>
-                    <th class="col3">Description</th>
-                    <th class="col4">Director</th>
-                    <th class="col5">Writer</th>
-                    <th class="col6">Release Info</th>
+                    <th class="col2">Description</th>
+                    <th class="col3">Director</th>
+                    <th class="col4">Writer</th>
+                    <th class="col6">Image</th>
                   </tr>
                 </thead>
                 <tbody id="tbody">
@@ -61,15 +61,20 @@
             {#    'search':$("#demo").val(),#}
             {#    'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()#}
             {#.},#}
-            success: function(response){
-                {#console.log(response);#}
+            success: function(data){
+                console.log(data);
+
                 var theHTML = {};
-                $.each(response,function(key,value){
+
+                $.each(data,function(key,value){
                    theHTML += "<tr>" ;
-                   theHTML += "<td>" + key + "</td>" ;
-               $.each(value,function(i) {
-                   theHTML += "<td>" + value[i] + "</td>";
-               })
+                   theHTML += "<td>" + value['Name'] + "</td>";
+                   theHTML += "<td>" + value['Description'] + "</td>";
+                   theHTML += "<td>" + value['Director'] + "</td>";
+                   theHTML += "<td>" + value['Writer'] + "</td>";
+                   theHTML += "<td><img src='" + value['Image'] + "'></td>" ;
+
+
                     theHTML += "</tr>";
 
                    $("#myTable #tbody").html(theHTML);

@@ -19,17 +19,14 @@ def search_data(search):
     alldata = soup.find('table', class_='findList')
 
     if alldata is not None:
-        data = alldata.find_all('td', class_='result_text')
+        data = alldata.find_all('tr')
 
-        name_list = []
-        des_list = []
-        director_list = []
-        writer_list = []
-        year_list = []
+        detail_dict = []
 
         for movie in data[:3]:
-            name = movie.a.text
-            name_list.append(name)
+            name = movie.find('td', class_='result_text').a.text
+
+            image = movie.find('td', class_='primary_photo').img.attrs['src']
 
             data = movie.find('a', href=True)
             res = requests.get('https://www.imdb.com' + data['href'])
@@ -42,34 +39,25 @@ def search_data(search):
                                                                                                 class_='sc-2a827f80-10 fVYbpg')
 
             for detail in details:
+                a = {}
                 des = detail.find('div', class_='sc-16ede01-7 hrgVKw').text
-                des_list.append(des)
 
                 director = detail.find('ul',
                                        class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
-                director_list.append(director)
 
                 writer = detail.find_next('ul',
                                           class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next(
                     'ul',
                     class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
-                writer_list.append(writer)
 
-            info = soup.find('section', class_='ipc-page-section ipc-page-section--baseAlt ipc-page-section--tp-none '
-                                               'ipc-page-section--bp-xs sc-2a827f80-1 gvCXlM').find_all('div',
-                                                                                                        class_='sc-80d4314-2 iJtmbR')
+                a['Name'] = name
+                a['Description'] = des
+                a['Director'] = director
+                a['Writer'] = writer
+                a['Image'] = image
+                detail_dict.append(a)
 
-            for i in info:
-                year = i.text
-                year_list.append(year)
-
-        details_dict = {'Name': name_list,
-                        'Description': des_list,
-                        'Director': director_list,
-                        'Writer': writer_list,
-                        'Year': year_list}
-
-        return details_dict
+        return detail_dict
 
 
 class DemoFunction(View):
@@ -78,18 +66,11 @@ class DemoFunction(View):
 
     def post(self, request):
         search = request.POST['search']
-        print(search)
         search = search.strip()
         if search != '':
-            names = search_data(search)
-            print('names:', names)
-            if names is not None:
-                search_result = {}
-                for i in range(len(names['Name'])):
-                    search_result[names['Name'][i]] = names['Description'][i], names['Director'][i], names['Writer'][i], \
-                                                      names['Year'][
-                                                          i]
-                return JsonResponse(search_result, safe=False)
+            data = search_data(search)
+            if data is not None:
+                return JsonResponse(data, safe=False)
             else:
                 return JsonResponse('No data found')
 
