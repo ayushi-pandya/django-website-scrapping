@@ -42,21 +42,80 @@ def search_data(search):
                 a = {}
                 des = detail.find('div', class_='sc-16ede01-7 hrgVKw').text
 
-                director = detail.find('ul',
-                                       class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
+                try:
+                    directors = detail.find('ul',
+                                            class_='ipc-inline-list ipc-inline-list--show-dividers '
+                                                   'ipc-inline-list--inline '
+                                                   'ipc-metadata-list-item__list-content baseAlt')
 
-                writer = detail.find_next('ul',
-                                          class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').find_next(
-                    'ul',
-                    class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline ipc-metadata-list-item__list-content baseAlt').text
+                    director_list = [
+                        i.find('a').text
+                        for i in directors.find_all('li', class_='ipc-inline-list__item')
+                    ]
+                except:
+                    director_list = '--'
+
+                try:
+                    writers = detail.find_next('ul',
+                                               class_='ipc-inline-list ipc-inline-list--show-dividers '
+                                                      'ipc-inline-list--inline ipc-metadata-list-item__list-content '
+                                                      'baseAlt').find_next(
+                        'ul',
+                        class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline '
+                               'ipc-metadata-list-item__list-content baseAlt')
+
+                    writers_list = [
+                        i.find('a').text
+                        for i in writers.find_all('li', class_='ipc-inline-list__item')
+                    ]
+                except:
+                    writers_list = '--'
+
+                try:
+                    stars = detail.find_next('ul',
+                                             class_='ipc-inline-list ipc-inline-list--show-dividers '
+                                                    'ipc-inline-list--inline ipc-metadata-list-item__list-content '
+                                                    'baseAlt').find_next(
+                        'ul',
+                        class_='ipc-inline-list ipc-inline-list--show-dividers ipc-inline-list--inline '
+                               'ipc-metadata-list-item__list-content baseAlt').find_next('ul',
+                                                                                         class_='ipc-inline-list '
+                                                                                                'ipc-inline-list--show'
+                                                                                                '-dividers '
+                                                                                                'ipc-inline-list'
+                                                                                                '--inline '
+                                                                                                'ipc-metadata-list'
+                                                                                                '-item__list-content '
+                                                                                                'baseAlt')
+
+                    stars_list = [
+                        i.find('a').text
+                        for i in stars.find_all('li', class_='ipc-inline-list__item')
+                    ]
+                except:
+                    stars_list = '--'
+
+                try:
+                    movie_type = detail.find('div', class_='ipc-chip-list__scroller').text
+                except:
+                    movie_type = '--'
+
+                try:
+                    ratings = detail.find('div', class_='sc-7ab21ed2-0 fAePGh')
+                    rate = ratings.span.text
+                except:
+                    rate = '--'
 
                 a['Name'] = name
                 a['Description'] = des
-                a['Director'] = director
-                a['Writer'] = writer
+                a['Director'] = director_list
+                a['Writer'] = writers_list
+                a['Stars'] = stars_list
                 a['Image'] = image
+                a['Movie Type'] = movie_type
+                a['Ratings'] = rate
                 detail_dict.append(a)
-
+        print('detail_dict:', detail_dict)
         return detail_dict
 
 
@@ -75,4 +134,4 @@ class DemoFunction(View):
                 return JsonResponse('No data found')
 
         else:
-            return render(request, 'demo/home.html')
+            return render(request, 'demo/demo.html')
